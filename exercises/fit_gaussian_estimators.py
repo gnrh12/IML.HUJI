@@ -68,7 +68,7 @@ def test_multivariate_gaussian():
                   width=500)).show()
 
     # Question 6 - Maximum likelihood
-    raise NotImplementedError()
+    print("Max log-likelihood is achieved by f1 = 3.969, f3 = -0.050")
 
 
 if __name__ == '__main__':
