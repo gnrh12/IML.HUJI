@@ -49,23 +49,25 @@ class LDA(BaseEstimator):
         """
         self.classes_, counts = np.unique(y, return_counts=True)
 
-        self.mu_ = np.zeros(self.classes_.size, X.shape[1])
-        for i in range(self.classes_.size):
-            self.mu_[i] = np.sum(
-                [x_i if (y[i] == self.classes_[i]) else 0 for x_i in X])\
-                          / counts[i]
+        self.mu_ = np.empty((0, X.shape[1]))
+        for k in self.classes_:
+            label_cols = X[y == k]
+            mean_k = label_cols.mean(axis=0)
+            self.mu_ = np.append(self.mu_, [mean_k], axis=0)
 
-        self.cov_ = np.zeros((X.shape[1], X.shape[1]))
+        self.pi_ = counts / X.shape[0]
+
         sum = 0
         for i in range(X.shape[0]):
             y_index = np.where(self.classes_ == y[i])
             diff = X[i] - self.mu_[y_index]
             sum += diff.reshape(diff.size, 1) @ diff.reshape(1, diff.size)
-        self.cov_ = sum / (X.shape[1] - self.classes_.size)
+        self.cov_ = sum / (X.shape[0] - self.classes_.size)
 
         self._cov_inv = inv(self.cov_)
 
-        self.pi_ = np.array([counts[i] / X.shape[0] for i in range(self.classes_.shape[0])])
+        self.pi_ = np.array([counts[i] / X.shape[0]
+                             for i in range(self.classes_.shape[0])])
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -84,12 +86,12 @@ class LDA(BaseEstimator):
         results = []
         for x in X:
             ks_array = []
-            for k in self.classes_.size:
+            for k in range(self.classes_.size):
                 ak = self._cov_inv @ self.mu_[k].reshape(self.mu_[k].size, 1)
-                bk = np.log(self.pi_[k]) \
-                    - ((self.mu_[k].reshape(1, self.mu_[k].size)
-                        @ self._cov_inv
-                        @ self.mu_[k].reshape(self.mu_[k], 1)) / 2)
+                bk = np.log(self.pi_[k]) - 0.5 *\
+                     ((self.mu_[k].reshape(1, self.mu_[k].size))
+                      @ self._cov_inv
+                      @ (self.mu_[k].reshape(self.mu_[k].size, 1)))
                 ks_array.append(ak.reshape(1, ak.size)
                                 @ x.reshape(x.size, 1) + bk)
             results.append(self.classes_[np.argmax(ks_array)])
@@ -114,7 +116,7 @@ class LDA(BaseEstimator):
         if not self.fitted_:
             raise ValueError("Estimator must first be fitted before calling `likelihood` function")
 
-        likelihoods = np.zeros(X.shape[0], self.classes_.size)
+        likelihoods = np.zeros((X.shape[0], self.classes_.size))
         Z = np.sqrt(np.power(2 * np.pi, X.shape[1]) * det(self.cov_))
         for i in range(X.shape[0]):
             for k in self.classes_.size:

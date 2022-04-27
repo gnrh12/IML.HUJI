@@ -54,9 +54,7 @@ def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     -------
     Accuracy of given predictions
     """
-    true_pos = np.sum((y_true + y_pred) == 2)
-    true_neg = np.sum((y_true + y_pred) == -2)
-    return true_neg + true_pos / y_true.size
+    return 1 - misclassification_error(y_true, y_pred)
 
 
 def cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> float:

@@ -42,20 +42,16 @@ class GaussianNaiveBayes(BaseEstimator):
         """
         self.classes_, counts = np.unique(y, return_counts=True)
 
-        self.mu_ = np.zeros(self.classes_.size, X.shape[1])
-        for i in range(self.classes_.size):
-            self.mu_[i] = np.sum(
-                [x_i if (y[i] == self.classes_[i]) else 0 for x_i in X])\
-                          / counts[i]
+        self.mu_ = np.empty((0, X.shape[1]))
+        self.vars_ = np.empty((0, X.shape[1]))
+        for k in self.classes_:
+            label_cols = X[y == k]
+            mean_k = label_cols.mean(axis=0)
+            var_k = label_cols.var(axis=0, ddof=1)
+            self.mu_ = np.append(self.mu_, [mean_k], axis=0)
+            self.vars_ = np.append(self.vars_, [var_k], axis=0)
 
-        self.vars_ = np.zeros(self.classes_.size, X.shape[1])
-        for k in range(self.classes_.size):
-            for i in range(X.shape[0]):
-                if y[i] == self.classes_[k]:
-                    mu = self.mu_[k]
-                    self.vars_[k] += np.square(X[i] - mu) / (counts[k] - 1)
-
-        self.pi_ = np.array([counts[i] / X.shape[0] for i in range(self.classes_.shape[0])])
+        self.pi_ = counts / X.shape[0]
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -97,9 +93,9 @@ class GaussianNaiveBayes(BaseEstimator):
         if not self.fitted_:
             raise ValueError("Estimator must first be fitted before calling `likelihood` function")
 
-        likelihoods = np.zeros(X.shape[0], self.classes_.size)
+        likelihoods = np.zeros((X.shape[0], self.classes_.size))
         for i in range(X.shape[0]):
-            for k in self.classes_.size:
+            for k in range(self.classes_.size):
                 cur_likli = self.pi_[k]
                 for d in range(X.shape[1]):
                     Z = np.sqrt(np.power(2 * np.pi, X.shape[1])
