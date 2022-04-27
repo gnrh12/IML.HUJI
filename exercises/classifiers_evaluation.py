@@ -38,14 +38,36 @@ def run_perceptron():
     """
     for n, f in [("Linearly Separable", "linearly_separable.npy"), ("Linearly Inseparable", "linearly_inseparable.npy")]:
         # Load dataset
-        raise NotImplementedError()
+        data = np.load("../datasets/" + f)
+        samples = data[:, 0:2]
+        lables = data[:, 2]
 
         # Fit Perceptron and record loss in each fit iteration
         losses = []
-        raise NotImplementedError()
+        # callback = lambda perceptr, sample, res: losses.append([perceptr.loss(samples, lables)])
+
+        perceptron = Perceptron(callback=lambda perceptr, sample, res:
+                                losses.append(perceptr.loss(samples,
+                                                             lables))).fit(samples, lables)
+        print(losses)
+        print(len(losses))
 
         # Plot figure
-        raise NotImplementedError()
+        # go.line(losses, x=range(1, 1001), y=losses,
+        #            labels={"x": f"Training Iterations", "y": "Training Loss Values"},
+        #            title="Training Loss Values as a Function of Training Iterations of a Perceptron Learner") \
+        #     .show()
+
+        # iterations = np.linspace(1, len(losses)).astype(int)
+        go.Figure(
+            [go.Scatter(x=list(range(len(losses))), y=np.array(losses), mode='lines',
+                        name=r'$\text{training loss}$',
+                        showlegend=True)],
+            layout=go.Layout(
+                title=r"Training Loss Values as a Function of Training Iterations of a Perceptron Learner, " + n + " data",
+                xaxis_title=r"$\text{Training Iterations}$",
+                yaxis_title=r"r$\text{Training Loss Values}$",
+                height=300)).show()
 
 
 def compare_gaussian_classifiers():
@@ -54,18 +76,28 @@ def compare_gaussian_classifiers():
     """
     for f in ["gaussian1.npy", "gaussian2.npy"]:
         # Load dataset
-        raise NotImplementedError()
+        samples, lables = load_dataset(f)
 
         # Fit models and predict over training set
-        raise NotImplementedError()
+        lda_model = LDA().fit(samples, lables)
+        lda_pred = lda_model.predict(samples)
+
+        gaussNaive_model = GaussianNaiveBayes().fit(samples, lables)
+        gauss_pred = gaussNaive_model.predict(samples)
 
         # Plot a figure with two suplots, showing the Gaussian Naive Bayes predictions on the left and LDA predictions
         # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
         from IMLearn.metrics import accuracy
-        raise NotImplementedError()
+        accuracies = [accuracy(lables, lda_pred), accuracy(lables, gauss_pred)]
+
+        fig = make_subplots(rows=1, cols=2,
+                            subplot_titles=["Accuracy of LDA Model: ",
+                                            "Accuracy of Gaussian Naive Bayes Model: "])
+
+        lda_ellipses = [get_ellip]
 
 
 if __name__ == '__main__':
     np.random.seed(0)
-    run_perceptron()
+    # run_perceptron()
     compare_gaussian_classifiers()

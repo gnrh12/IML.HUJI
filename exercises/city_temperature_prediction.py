@@ -1,5 +1,6 @@
 import IMLearn.learners.regressors.linear_regression
 from IMLearn.learners.regressors import PolynomialFitting
+from IMLearn.metrics import mean_square_error
 from IMLearn.utils import split_train_test
 
 import numpy as np
@@ -39,6 +40,12 @@ def load_data(filename: str) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
+    y_true = np.array([279000, 432000, 326000, 333000, 437400, 555950])
+    y_pred = np.array(
+        [199000.37562541, 452589.25533196, 345267.48129011, 345856.57131275,
+         563867.1347574, 395102.94362135])
+    print(mean_square_error(y_true, y_pred))
+
     np.random.seed(0)
     # Question 1 - Load and preprocessing of city temperature dataset
     matrix = load_data("datasets/City_Temperature.csv")
