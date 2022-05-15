@@ -39,7 +39,6 @@ def run_perceptron():
         # Fit Perceptron and record loss in each fit iteration
         losses = []
 
-<<<<<<< HEAD
         perceptron = Perceptron(callback=lambda perceptr, sample, res:
                                 losses.append(perceptr.loss(samples,
                                                              lables)))\
@@ -78,10 +77,6 @@ def get_ellipse(mu: np.ndarray, cov: np.ndarray):
     ys = (l1 * np.sin(theta) * np.cos(t)) + (l2 * np.cos(theta) * np.sin(t))
 
     return go.Scatter(x=mu[0] + xs, y=mu[1] + ys, mode="lines", marker_color="black")
-=======
-        # Plot figure of loss as function of fitting iteration
-        raise NotImplementedError()
->>>>>>> 072d4a39a901a32c752ab820cf8b7ec30a77b344
 
 
 def get_ellipse(mu: np.ndarray, cov: np.ndarray):
@@ -128,7 +123,6 @@ def compare_gaussian_classifiers():
         # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
         # Create subplots
         from IMLearn.metrics import accuracy
-<<<<<<< HEAD
         lda_acc = accuracy(labels, lda_pred)
         gauss_acc = accuracy(labels, gauss_pred)
 
@@ -201,19 +195,6 @@ def compare_gaussian_classifiers():
         fig.add_traces(gaussNaive_ellipses, rows=1, cols=2)
 
         fig.show()
-=======
-        raise NotImplementedError()
-
-        # Add traces for data-points setting symbols and colors
-        raise NotImplementedError()
-
-        # Add `X` dots specifying fitted Gaussians' means
-        raise NotImplementedError()
-
-        # Add ellipses depicting the covariances of the fitted Gaussians
-        raise NotImplementedError()
-
->>>>>>> 072d4a39a901a32c752ab820cf8b7ec30a77b344
 
 if __name__ == '__main__':
     np.random.seed(0)
